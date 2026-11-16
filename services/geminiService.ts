@@ -1,8 +1,6 @@
-import { GoogleGenAI, Chat } from "@google/genai";
+import { GoogleGenAI, type Chat } from '@google/genai';
 
-// NOTE: In a production environment, API keys should not be exposed on the client side.
-// This is for demonstration/prototype purposes as requested.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 let chatSession: Chat | null = null;
 
@@ -39,7 +37,7 @@ export const sendMessageToStylist = async (message: string): Promise<string> => 
     const response = await session.sendMessage({ message });
     return response.text || "I'm having a bit of a wardrobe malfunction. Can you repeat that?";
   } catch (error) {
-    console.error("Error sending message to Gemini:", error);
+    console.error('Error sending message to Gemini:', error);
     return "Sorry, I'm currently offline. Please try again later.";
   }
 };

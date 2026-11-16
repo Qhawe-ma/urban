@@ -54,7 +54,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'admin1234') {
+    const expected = import.meta.env.VITE_ADMIN_PASSWORD;
+    if (expected && password === expected) {
       setIsAuthenticated(true);
     } else {
       alert('Incorrect password');
