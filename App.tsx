@@ -141,44 +141,44 @@ const App: React.FC = () => {
   const { hero, collections } = siteContent;
 
   if (lastOrderId) {
-      return (
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-              <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center animate-fade-in">
-                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
-                      <CheckCircle size={40} />
-                  </div>
-                  <h1 className="text-3xl font-serif font-bold text-gray-900 mb-2">Order Confirmed!</h1>
-                  <p className="text-gray-500 mb-6">Thank you for shopping with UrbanThreads. Your style upgrade is on the way.</p>
-                  
-                  <div className="bg-gray-50 border border-dashed border-gray-300 p-4 rounded-lg mb-8">
-                      <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Order Number</p>
-                      <p className="text-2xl font-mono font-bold text-urban-900 select-all">{lastOrderId}</p>
-                  </div>
-
-                  <div className="space-y-3">
-                      <button 
-                          onClick={() => {
-                              setTrackingOrderId(lastOrderId);
-                              setLastOrderId(null);
-                              setCurrentView(View.TRACK_ORDER);
-                          }}
-                          className="w-full bg-urban-900 text-white py-3 rounded-lg font-bold hover:bg-urban-800 transition-colors"
-                      >
-                          Track My Order
-                      </button>
-                      <button 
-                          onClick={() => {
-                              setLastOrderId(null);
-                              setCurrentView(View.HOME);
-                          }}
-                          className="w-full bg-white border border-gray-200 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-50 transition-colors"
-                      >
-                          Continue Shopping
-                      </button>
-                  </div>
-              </div>
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center animate-fade-in">
+          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
+            <CheckCircle size={40} />
           </div>
-      )
+          <h1 className="text-3xl font-serif font-bold text-gray-900 mb-2">Order Confirmed!</h1>
+          <p className="text-gray-500 mb-6">Thank you for shopping with UrbanThreads. Your style upgrade is on the way.</p>
+
+          <div className="bg-gray-50 border border-dashed border-gray-300 p-4 rounded-lg mb-8">
+            <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Order Number</p>
+            <p className="text-2xl font-mono font-bold text-urban-900 select-all">{lastOrderId}</p>
+          </div>
+
+          <div className="space-y-3">
+            <button
+              onClick={() => {
+                setTrackingOrderId(lastOrderId);
+                setLastOrderId(null);
+                setCurrentView(View.TRACK_ORDER);
+              }}
+              className="w-full bg-urban-900 text-white py-3 rounded-lg font-bold hover:bg-urban-800 transition-colors"
+            >
+              Track My Order
+            </button>
+            <button
+              onClick={() => {
+                setLastOrderId(null);
+                setCurrentView(View.HOME);
+              }}
+              className="w-full bg-white border border-gray-200 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-50 transition-colors"
+            >
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
