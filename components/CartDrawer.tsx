@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { X, Trash2, ArrowRight, Minus, Plus, ShoppingBag, AlertCircle } from 'lucide-react';
 import { CartItem } from '../types';
@@ -14,23 +13,18 @@ interface CartDrawerProps {
 
 const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, items, onRemove, onUpdateQty, onCheckout }) => {
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  
-  // Check if any item has issues preventing checkout
   const hasStockIssues = items.some(item => item.quantity > (item.stock ?? 0));
 
   return (
     <div className={`fixed inset-0 z-[60] overflow-hidden ${isOpen ? 'pointer-events-auto' : 'pointer-events-none'}`}>
-      {/* Overlay */}
       <div 
         className={`absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0'}`} 
         onClick={onClose}
       />
 
-      {/* Panel */}
       <div className={`fixed inset-y-0 right-0 max-w-md w-full bg-white shadow-2xl transform transition-transform duration-500 cubic-bezier(0.16, 1, 0.3, 1) ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="h-full flex flex-col">
           
-          {/* Header */}
           <div className="px-6 py-6 border-b border-gray-100 flex items-center justify-between bg-white">
             <h2 className="text-xl font-bold text-gray-900 tracking-tight">Your Bag ({items.reduce((acc, i) => acc + i.quantity, 0)})</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-900 transition-colors">
@@ -38,7 +32,6 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, items, onRemov
             </button>
           </div>
 
-          {/* Items */}
           <div className="flex-1 overflow-y-auto p-6 bg-gray-50/50">
             {items.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-gray-500">
@@ -77,7 +70,6 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, items, onRemov
                           </div>
                           <p className="mt-1 text-sm text-gray-500">{item.category}</p>
                           
-                          {/* Stock Warning */}
                           {isLowStock && (
                              <div className="flex items-center mt-2 text-xs font-medium text-red-600 bg-red-50 p-1.5 rounded">
                                 <AlertCircle size={12} className="mr-1.5" />
@@ -116,7 +108,6 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, items, onRemov
             )}
           </div>
 
-          {/* Footer */}
           {items.length > 0 && (
             <div className="bg-white border-t border-gray-100 px-6 py-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
               <div className="flex justify-between text-base font-medium text-gray-900 mb-2">

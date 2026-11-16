@@ -1,7 +1,5 @@
 import { Product, SiteContent } from './types';
 
-export const APP_NAME = "UrbanThreads";
-
 export const PRODUCTS: Product[] = [
   {
     id: "1",
@@ -95,7 +93,7 @@ export const PRODUCTS: Product[] = [
   }
 ];
 
-export const COLLECTIONS = [
+const COLLECTIONS = [
   { id: 1, name: "Summer Breeze", image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=800&q=80" },
   { id: 2, name: "Monochrome Edit", image: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80" },
   { id: 3, name: "City Nights", image: "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?auto=format&fit=crop&w=800&q=80" },

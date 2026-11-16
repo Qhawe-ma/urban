@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, Send, Bot, User } from 'lucide-react';
+import { MessageSquare, X, Send, Bot } from 'lucide-react';
 import { ChatMessage } from '../types';
 import { sendMessageToStylist } from '../services/geminiService';
 
@@ -59,11 +59,9 @@ const StylistChat: React.FC = () => {
   return (
     <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end pointer-events-none">
       
-      {/* Chat Window */}
       <div 
         className={`pointer-events-auto bg-white rounded-2xl shadow-2xl border border-gray-200 w-80 sm:w-96 mb-4 overflow-hidden transition-all duration-300 origin-bottom-right transform ${isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0 h-0'}`}
       >
-        {/* Header */}
         <div className="bg-gradient-to-r from-urban-900 to-gray-800 p-4 flex justify-between items-center">
           <div className="flex items-center text-white">
             <div className="bg-white/20 p-1.5 rounded-full mr-2">
@@ -79,7 +77,6 @@ const StylistChat: React.FC = () => {
           </button>
         </div>
 
-        {/* Messages */}
         <div className="h-80 overflow-y-auto p-4 bg-gray-50 space-y-4">
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -106,7 +103,6 @@ const StylistChat: React.FC = () => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input */}
         <div className="p-3 bg-white border-t border-gray-100 flex">
           <input 
             type="text" 
@@ -126,7 +122,6 @@ const StylistChat: React.FC = () => {
         </div>
       </div>
 
-      {/* Toggle Button */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
         className={`pointer-events-auto group flex items-center justify-center w-14 h-14 rounded-full shadow-lg transition-all duration-300 ${isOpen ? 'bg-gray-200 text-gray-600 rotate-90' : 'bg-urban-900 text-white hover:bg-urban-accent'}`}

@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Search, Package, Truck, CheckCircle, MapPin, Box, ArrowRight, Clock } from 'lucide-react';
+import { Search, Truck, CheckCircle, MapPin, Box, ArrowRight } from 'lucide-react';
 import { getOrder } from '../services/productService';
 import { Order } from '../types';
 
@@ -21,7 +20,7 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ initialOrderId }) => {
     setLoading(true);
     setError('');
     setOrder(null);
-    setProgressWidth(0); // Reset animation
+    setProgressWidth(0);
 
     try {
       const result = await getOrder(id.trim());
@@ -42,7 +41,6 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ initialOrderId }) => {
     fetchOrderData(orderId);
   };
 
-  // Automatically fetch order if initialOrderId is provided
   useEffect(() => {
     if (initialOrderId) {
       setOrderId(initialOrderId);
@@ -60,13 +58,11 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ initialOrderId }) => {
   useEffect(() => {
     if (order) {
       const index = STATUS_STEPS.findIndex(s => s.key === order.status);
-      // Calculate percentage for the progress bar width
-      // We want it to line up with the centers of the circles.
-      // 0 items = 0%, 1 item = 0%, 2 items = 33%, 3 = 66%, 4 = 100% roughly
+      // 0% on the first step and 100% on the last, so the bar ends on the active step.
       const totalSteps = STATUS_STEPS.length;
       const percent = index === -1 ? 0 : (index / (totalSteps - 1)) * 100;
-      
-      // Add a small delay to ensure the DOM is ready for the transition visual
+
+      // Delay so the width transition runs after paint.
       const timer = setTimeout(() => {
         setProgressWidth(Math.max(0, Math.min(percent, 100)));
       }, 300);
@@ -115,7 +111,6 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ initialOrderId }) => {
 
       {order && (
         <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-slide-up transition-all">
-          {/* Header */}
           <div className="p-6 md:p-8 border-b border-gray-100 bg-gray-50/50 flex flex-col md:flex-row justify-between items-center gap-4">
              <div className="text-center md:text-left">
                 <div className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Order Number</div>
@@ -128,18 +123,14 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ initialOrderId }) => {
           </div>
 
           <div className="p-6 md:p-10">
-            {/* Progress Bar Section */}
             <div className="relative mb-16 mt-4">
-                {/* Background Line */}
                 <div className="absolute top-1/2 left-0 w-full h-2 bg-gray-100 rounded-full -translate-y-1/2 hidden md:block"></div>
-                
-                {/* Animated Foreground Line */}
+
                 <div 
                     className="absolute top-1/2 left-0 h-2 bg-urban-900 rounded-full -translate-y-1/2 hidden md:block transition-all duration-[1500ms] ease-out"
                     style={{ width: `${progressWidth}%` }}
                 ></div>
 
-                {/* Steps */}
                 <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center gap-8 md:gap-0">
                     {STATUS_STEPS.map((step, index) => {
                         const currentIndex = getCurrentStepIndex();
@@ -150,7 +141,6 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ initialOrderId }) => {
                         return (
                             <div key={step.key} className={`relative flex md:flex-col items-center z-10 group md:w-48 ${index === 0 ? 'md:items-start' : index === STATUS_STEPS.length - 1 ? 'md:items-end' : 'md:items-center'}`}>
                                 
-                                {/* Icon Circle */}
                                 <div className={`
                                     w-12 h-12 rounded-full flex items-center justify-center border-4 transition-all duration-500
                                     ${isActive ? 'bg-urban-900 border-urban-100 scale-110 shadow-lg ring-4 ring-urban-50' : ''}
@@ -163,12 +153,10 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ initialOrderId }) => {
                                     `} />
                                 </div>
 
-                                {/* Mobile Line Connector */}
                                 {index !== STATUS_STEPS.length - 1 && (
                                     <div className={`absolute left-6 top-12 w-1 h-16 -ml-0.5 md:hidden ${isCompleted && getCurrentStepIndex() > index ? 'bg-urban-900' : 'bg-gray-100'}`}></div>
                                 )}
 
-                                {/* Text */}
                                 <div className={`ml-6 md:ml-0 md:mt-4 flex flex-col ${index === 0 ? 'md:items-start md:text-left' : index === STATUS_STEPS.length - 1 ? 'md:items-end md:text-right' : 'md:items-center md:text-center'}`}>
                                     <span className={`font-bold text-base transition-colors ${isCompleted ? 'text-urban-900' : 'text-gray-400'}`}>
                                         {step.label}
@@ -176,12 +164,10 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ initialOrderId }) => {
                                     <span className="text-xs text-gray-500 max-w-[150px] mt-1 hidden md:block">
                                         {step.desc}
                                     </span>
-                                    {/* Mobile Description */}
                                     <span className="text-xs text-gray-500 mt-1 md:hidden">
                                         {step.desc}
                                     </span>
                                     
-                                    {/* Packaging status specific text */}
                                     {isActive && step.key === 'Processing' && (
                                         <span className="md:hidden inline-block px-2 py-1 bg-urban-50 text-urban-900 text-[10px] font-bold uppercase tracking-wider rounded mt-2">
                                             Packing in progress...
@@ -194,7 +180,6 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ initialOrderId }) => {
                 </div>
             </div>
 
-            {/* Order Items Summary */}
             <div className="border-t border-gray-100 pt-8">
                 <h3 className="text-lg font-bold text-gray-900 mb-6">Shipment Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

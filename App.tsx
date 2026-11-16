@@ -8,7 +8,7 @@ import StylistChat from './components/StylistChat';
 import AdminPanel from './components/AdminPanel';
 import CheckoutModal from './components/CheckoutModal';
 import OrderTracking from './components/OrderTracking';
-import { APP_NAME, DEFAULT_SITE_CONTENT } from './constants';
+import { DEFAULT_SITE_CONTENT } from './constants';
 import { subscribeToProducts, seedProductsIfEmpty, subscribeToSiteContent } from './services/productService';
 import { Product, CartItem, View, SiteContent } from './types';
 import { Heart, Instagram, Twitter, Facebook, Filter, ArrowRight, Settings, CheckCircle } from 'lucide-react';
@@ -24,12 +24,9 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [lastOrderId, setLastOrderId] = useState<string | null>(null);
   const [trackingOrderId, setTrackingOrderId] = useState<string | null>(null);
-  
-  // Newsletter State
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [isNewsletterJoined, setIsNewsletterJoined] = useState(false);
 
-  // Fetch products and site content from Firebase
   useEffect(() => {
     seedProductsIfEmpty();
     
@@ -48,11 +45,10 @@ const App: React.FC = () => {
     };
   }, []);
 
-  // Merge cart items with live product data to ensure we always have the latest stock and price info
+  // Keep the shopper's quantity, but take price, image, and stock from the live catalogue.
+  // A missing stock field is treated as zero so checkout cannot proceed on it.
   const cartWithLiveStock = cart.map(cartItem => {
     const product = products.find(p => p.id === cartItem.id);
-    // If product exists, update stock/price info. 
-    // Crucial: Default stock to 0 if undefined to prevent checkout errors
     return product ? { 
         ...cartItem, 
         stock: product.stock ?? 0, 
@@ -63,15 +59,13 @@ const App: React.FC = () => {
 
   const cartCount = cartWithLiveStock.reduce((acc, item) => acc + item.quantity, 0);
 
-  // Cart Logic
   const addToCart = (product: Product) => {
     const currentStock = product.stock ?? 0;
-    if (currentStock <= 0) return; // Prevent adding out of stock items
+    if (currentStock <= 0) return;
 
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
-        // Check if adding 1 more would exceed stock
         if (existing.quantity >= currentStock) {
           return prev;
         }
@@ -94,8 +88,7 @@ const App: React.FC = () => {
         const product = products.find(p => p.id === id);
         const maxStock = product ? (product.stock ?? 0) : item.stock;
         const newQty = item.quantity + delta;
-        
-        // Prevent going above max stock
+
         if (delta > 0 && newQty > maxStock) {
           return item;
         }
@@ -107,7 +100,7 @@ const App: React.FC = () => {
   };
 
   const handleCheckoutSuccess = (orderId: string) => {
-    setCart([]); // Clear cart
+    setCart([]);
     setLastOrderId(orderId);
     setIsCartOpen(false); 
   };
@@ -115,12 +108,11 @@ const App: React.FC = () => {
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newsletterEmail || !newsletterEmail.includes('@')) return;
-    
-    // Simulate API call
+
+    // Nothing is stored or sent. The message only confirms the click locally.
     setIsNewsletterJoined(true);
     setNewsletterEmail('');
-    
-    // Reset success message after 5 seconds
+
     setTimeout(() => {
         setIsNewsletterJoined(false);
     }, 5000);
@@ -132,26 +124,22 @@ const App: React.FC = () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Handle main navigation clicks
   const handleNavClick = (view: View) => {
     setCurrentView(view);
-    // If manually navigating to tracking, clear any specific order ID so it starts fresh
+    // A manual visit should not reuse the order id from the confirmation screen.
     if (view === View.TRACK_ORDER) {
       setTrackingOrderId(null);
     }
   };
 
-  // Filtering
   const filteredProducts = selectedCategory === 'All' 
     ? products 
     : products.filter(p => p.category === selectedCategory);
 
   const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
 
-  // Use content from DB, fallback to default
   const { hero, collections } = siteContent;
 
-  // Render Success Screen overlay if order just placed
   if (lastOrderId) {
       return (
           <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">

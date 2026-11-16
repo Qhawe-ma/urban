@@ -27,7 +27,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cartItem
   });
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shipping = 150; // Flat rate
+  const shipping = 150; // Flat rand amount. The address is not used to price it.
   const total = subtotal + shipping;
 
   if (!isOpen) return null;
@@ -37,7 +37,7 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cartItem
     setStep('PROCESSING');
     setError(null);
 
-    // Simulate payment processing delay
+    // Card fields never leave this component. The delay stands in for a payment call.
     setTimeout(async () => {
       const orderData: Omit<Order, 'id'> = {
         items: cartItems,
@@ -56,9 +56,10 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cartItem
         onSuccess(orderId);
         setStep('SUCCESS'); 
         onClose();
-      } catch (err: any) {
+      } catch (err) {
         console.error(err);
-        setError(err.message || 'Checkout failed. Please try again.');
+        const message = err instanceof Error && err.message ? err.message : 'Checkout failed. Please try again.';
+        setError(message);
         setStep('FORM');
       }
     }, 2000);
@@ -68,23 +69,20 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cartItem
     const { name, value } = e.target;
     let formattedValue = value;
 
-    // Credit Card Formatting
     if (name === 'cardNumber') {
         const raw = value.replace(/\D/g, '');
         const truncated = raw.slice(0, 16);
         formattedValue = truncated.replace(/(\d{4})(?=\d)/g, '$1 ');
     }
     
-    // Expiry Formatting (MM/YY)
     else if (name === 'expiry') {
         const raw = value.replace(/\D/g, '');
         const truncated = raw.slice(0, 4);
         
-        // Logic to handle slash insertion/deletion
         if (truncated.length > 2) {
              formattedValue = `${truncated.slice(0, 2)}/${truncated.slice(2)}`;
         } else if (truncated.length === 2) {
-             // Only add slash if we are typing (length increasing), not deleting
+             // Keep the slash while typing, and let backspace remove it.
              const isTyping = value.length > formData.expiry.length;
              if (isTyping) {
                  formattedValue = `${truncated}/`;
@@ -96,7 +94,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cartItem
         }
     }
 
-    // CVV Formatting
     else if (name === 'cvv') {
         const raw = value.replace(/\D/g, '');
         formattedValue = raw.slice(0, 4);
@@ -105,7 +102,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cartItem
     setFormData(prev => ({ ...prev, [name]: formattedValue }));
   };
 
-  // Common input class for consistency and visibility
   const inputClass = "w-full px-4 py-3 pl-10 border border-gray-200 rounded-lg text-sm bg-white text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-urban-900 focus:border-transparent outline-none transition-all shadow-sm";
 
   return (
@@ -113,7 +109,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cartItem
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row animate-fade-in">
-        {/* Left Side: Form */}
         <div className="flex-1 p-6 md:p-8 overflow-y-auto bg-white">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-serif font-bold text-gray-900">Checkout</h2>
@@ -135,7 +130,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cartItem
                 </div>
               )}
 
-              {/* Contact */}
               <div>
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
                     <Mail size={14} className="mr-2" /> Contact Information
@@ -156,7 +150,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cartItem
                 </div>
               </div>
 
-              {/* Shipping */}
               <div>
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
                     <Truck size={14} className="mr-2" /> Shipping Address
@@ -169,7 +162,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cartItem
                         <input required type="text" name="firstName" placeholder="First Name" value={formData.firstName} onChange={handleInputChange} className={inputClass} />
                     </div>
                     <div className="relative">
-                         {/* Use padding left without icon for consistency if needed, or add icon */}
                         <input required type="text" name="lastName" placeholder="Last Name" value={formData.lastName} onChange={handleInputChange} className={`${inputClass} pl-4`} />
                     </div>
                     
@@ -189,7 +181,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cartItem
                 </div>
               </div>
 
-              {/* Payment */}
               <div>
                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
                     <ShieldCheck size={14} className="mr-2" /> Payment Details
@@ -271,7 +262,6 @@ const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, cartItem
           )}
         </div>
 
-        {/* Right Side: Order Summary */}
         <div className="hidden md:block w-80 bg-gray-50 border-l border-gray-200 p-8 overflow-y-auto">
           <div className="flex justify-between items-center mb-6">
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600 ml-auto">

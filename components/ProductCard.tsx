@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ShoppingBag, AlertCircle } from 'lucide-react';
 import { Product } from '../types';
@@ -9,7 +8,7 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
-  // Safely handle undefined stock - default to 0 if missing
+  // Missing stock is zero, which disables add-to-cart.
   const stockCount = product.stock ?? 0;
   const isOutOfStock = stockCount <= 0;
 
@@ -23,7 +22,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
           loading="lazy"
         />
         
-        {/* Permanent Overlay for OOS */}
         {isOutOfStock && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/10 z-10">
                 <span className="bg-white/90 backdrop-blur-sm px-4 py-2 text-xs font-bold uppercase tracking-widest text-gray-900 shadow-sm border border-gray-200">
@@ -32,7 +30,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAdd }) => {
             </div>
         )}
         
-        {/* Action Button Overlay - Appears on Hover */}
         <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full transition-transform duration-300 group-hover:translate-y-0 z-20">
            {isOutOfStock ? (
              <button 
