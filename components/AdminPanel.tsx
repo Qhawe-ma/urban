@@ -1,11 +1,11 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import { Product, SiteContent, HeroContent, CollectionItem, Order, OrderStatus } from '../types';
+import { Product, SiteContent, HeroContent, Order, OrderStatus } from '../types';
 import { addProduct, updateProduct, deleteProduct, updateSiteContent, subscribeToOrders, updateOrderStatus } from '../services/productService';
-import { 
-  Trash2, Edit, Plus, Save, X, Lock, 
-  LayoutTemplate, Package, Upload, Image as ImageIcon, 
-  AlertCircle, CheckCircle, LogOut, BarChart3, Search, Truck, Clock, User, ChevronDown
+import {
+  Trash2, Edit, Plus, Save, X, Lock,
+  LayoutTemplate, Package, Upload, Image as ImageIcon,
+  AlertCircle, CheckCircle, LogOut, BarChart3, Search, Truck, Clock, User, ChevronDown,
+  type LucideIcon,
 } from 'lucide-react';
 
 interface AdminPanelProps {
@@ -19,8 +19,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [activeTab, setActiveTab] = useState<Tab>('DASHBOARD');
-  
-  // Product Management State
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,21 +33,16 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
     stock: 20
   };
   const [newProduct, setNewProduct] = useState<Omit<Product, 'id'>>(initialProductState);
-
-  // Content Management State
   const [editableContent, setEditableContent] = useState<SiteContent>(siteContent);
   const [contentSaved, setContentSaved] = useState(false);
-
-  // Image Upload Ref
   const fileInputRef = useRef<HTMLInputElement>(null);
   const heroFileRef = useRef<HTMLInputElement>(null);
 
-  // Sync state when props change
+  // The form is a copy. Refresh it when the live document changes.
   useEffect(() => {
     setEditableContent(siteContent);
   }, [siteContent]);
 
-  // Subscribe to Orders when authenticated
   useEffect(() => {
     if (isAuthenticated) {
       const unsubscribe = subscribeToOrders((data) => {
@@ -61,14 +54,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === 'admin1234') {
+    const expected = import.meta.env.VITE_ADMIN_PASSWORD;
+    if (expected && password === expected) {
       setIsAuthenticated(true);
     } else {
       alert('Incorrect password');
     }
   };
 
-  // --- Image Upload Helper ---
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, callback: (base64: string) => void) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -82,7 +75,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
     }
   };
 
-  // --- Product Handlers ---
   const handleUpdateProduct = async (id: string, updates: Partial<Product>) => {
     try {
       await updateProduct(id, updates);
@@ -120,7 +112,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
     }
   };
 
-  // --- Order Handlers ---
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     try {
       await updateOrderStatus(orderId, newStatus as OrderStatus);
@@ -139,7 +130,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
     }
   };
 
-  // --- Content Handlers ---
   const handleSaveContent = async () => {
     try {
       await updateSiteContent(editableContent);
@@ -158,20 +148,17 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
     }));
   };
 
-  const updateCollection = (index: number, field: keyof CollectionItem, value: string) => {
+  const updateCollection = (index: number, field: 'name' | 'image', value: string) => {
     const newCollections = [...editableContent.collections];
-    // @ts-ignore
     newCollections[index] = { ...newCollections[index], [field]: value };
     setEditableContent(prev => ({ ...prev, collections: newCollections }));
   };
 
-  // --- Filtering ---
   const filteredProducts = products.filter(p => 
     p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     p.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // --- Stats ---
   const totalValue = products.reduce((acc, p) => acc + (p.price * (p.stock || 0)), 0);
   const lowStockItems = products.filter(p => (p.stock || 0) < 10).length;
   const pendingOrders = orders.filter(o => o.status === 'Processing').length;
@@ -209,7 +196,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
     );
   }
 
-  const NavButton = ({ tab, icon: Icon, label }: { tab: Tab, icon: any, label: string }) => (
+  const NavButton = ({ tab, icon: Icon, label }: { tab: Tab, icon: LucideIcon, label: string }) => (
     <button 
       onClick={() => setActiveTab(tab)}
       className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors whitespace-nowrap ${activeTab === tab ? 'bg-urban-accent text-white font-medium shadow-md' : 'text-gray-600 md:text-gray-400 hover:text-urban-900 md:hover:text-white md:hover:bg-white/5'}`}
@@ -221,7 +208,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
   return (
     <div className="flex min-h-screen bg-gray-50">
       
-      {/* Desktop Sidebar */}
       <aside className="w-64 bg-urban-900 text-white hidden md:flex flex-col fixed h-full z-10">
         <div className="p-6 border-b border-gray-800">
           <h2 className="text-xl font-bold tracking-wide">URBAN<span className="font-light text-gray-300">ADMIN</span></h2>
@@ -241,10 +227,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 md:ml-64 p-4 md:p-8 overflow-x-hidden">
         
-        {/* Header & Mobile Nav */}
         <header className="mb-8">
            <div className="flex justify-between items-center mb-6 md:mb-0">
             <div>
@@ -263,7 +247,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
             </div>
            </div>
 
-           {/* Mobile Navigation */}
            <div className="md:hidden flex overflow-x-auto pb-2 space-x-2 no-scrollbar">
                <button 
                  onClick={() => setActiveTab('DASHBOARD')} 
@@ -292,7 +275,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
            </div>
         </header>
 
-        {/* Dashboard Stats */}
         {activeTab === 'DASHBOARD' && (
           <div className="space-y-8 animate-fade-in">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -364,7 +346,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
           </div>
         )}
 
-        {/* Orders Tab */}
         {activeTab === 'ORDERS' && (
           <div className="space-y-6 animate-fade-in">
             {orders.length === 0 ? (
@@ -436,11 +417,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
           </div>
         )}
 
-        {/* Products Tab */}
         {activeTab === 'PRODUCTS' && (
           <>
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8 animate-fade-in">
-              {/* Toolbar */}
               <div className="p-5 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="relative max-w-md w-full">
                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
@@ -460,7 +439,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
                 </button>
               </div>
 
-              {/* Add Form Drawer */}
               {isAdding && (
                 <div className="border-b border-gray-100 bg-gray-50/50 p-6 animate-slide-down">
                   <div className="flex justify-between items-center mb-4">
@@ -542,7 +520,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
                 </div>
               )}
 
-              {/* Table */}
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-100">
                   <thead className="bg-gray-50/50">
@@ -672,7 +649,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
           </>
         )}
 
-        {/* Site Content Tab */}
         {activeTab === 'CONTENT' && (
            <div className="space-y-6 max-w-4xl animate-fade-in">
               <div className="flex justify-between items-center">
@@ -688,7 +664,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
                   </button>
               </div>
 
-              {/* Hero Editor */}
               <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                  <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center"><LayoutTemplate size={20} className="mr-2 text-urban-900" /> Hero Section</h3>
                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -758,7 +733,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ products, siteContent }) => {
                  </div>
               </div>
 
-              {/* Collections Editor */}
               <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                  <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center"><LayoutTemplate size={20} className="mr-2 text-urban-900" /> Collections</h3>
                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

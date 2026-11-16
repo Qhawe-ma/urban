@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { ShoppingBag, Menu, X, Sparkles, Truck } from 'lucide-react';
+import { ShoppingBag, Menu, X, Sparkles } from 'lucide-react';
 import { View } from '../types';
 
 interface NavbarProps {
@@ -22,8 +21,6 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onNavClick, cur
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          
-          {/* Logo */}
           <div 
             className="flex-shrink-0 flex items-center cursor-pointer group"
             onClick={() => handleNav(View.HOME)}
@@ -34,7 +31,6 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onNavClick, cur
             <span className="font-bold text-xl tracking-tight text-urban-900">URBAN<span className="font-light">THREADS</span></span>
           </div>
 
-          {/* Desktop Menu */}
           <div className="hidden md:flex space-x-8 items-center">
             <button 
               onClick={() => handleNav(View.HOME)}
@@ -62,7 +58,6 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onNavClick, cur
             </button>
           </div>
 
-          {/* Icons */}
           <div className="flex items-center space-x-4">
             <button 
               onClick={onCartClick} 
@@ -76,7 +71,6 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onNavClick, cur
               )}
             </button>
 
-            {/* Mobile Menu Button */}
             <button 
               className="md:hidden p-2 text-gray-600"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -87,7 +81,6 @@ const Navbar: React.FC<NavbarProps> = ({ cartCount, onCartClick, onNavClick, cur
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden absolute top-16 left-0 w-full bg-white border-b border-gray-200 shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">

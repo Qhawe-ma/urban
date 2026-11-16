@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -57,7 +56,6 @@ export enum View {
   HOME = 'HOME',
   SHOP = 'SHOP',
   COLLECTIONS = 'COLLECTIONS',
-  PRODUCT_DETAIL = 'PRODUCT_DETAIL',
   ADMIN = 'ADMIN',
   TRACK_ORDER = 'TRACK_ORDER'
 }
